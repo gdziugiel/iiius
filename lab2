@@ -1,0 +1,35 @@
+#!/bin/bash
+echo Podaj imię
+read imie
+imie=$(echo $imie | sed "y/ąćęłńóśźżĄĆĘŁŃÓŚŹŻ/acelnoszzACELNOSZZ/")
+imie=$(echo $imie | tr A-Z a-z)
+echo Podaj nazwisko
+read nazwisko
+nazwisko=$(echo $nazwisko | sed "y/ąćęłńóśźżĄĆĘŁŃÓŚŹŻ/acelnoszzACELNOSZZ/")
+nazwisko=$(echo $nazwisko | tr A-Z a-z)
+im=$(echo $imie | head -c 1)
+login=$im$nazwisko
+logintym=$login
+i=1
+while grep -i ^$logintym: /etc/passwd > /dev/null; do
+	logintym=$login$i
+	i=`expr $i + 1`
+done
+login=$logintym
+echo Login: $login
+haslo=$(echo $login | head -c 8)
+echo Hasło: $haslo
+useradd -m -s /bin/bash -p $(openssl passwd $haslo) $login
+passwd -e $login > /dev/null
+echo alias ll=\"ls -l\" >> /home/$login/.bash_aliases
+echo alias mk=\"mkdir\" >> /home/$login/.bash_aliases
+mkdir -p /home/$login/public_html/private_html
+chown $login:$login /home/$login/public_html
+chown $login:$login /home/$login/public_html/private_html
+htpasswd -b -c /home/$login/.htpasswd $login $haslo
+echo AuthType Basic >> /home/$login/public_html/private_html/.htaccess
+echo AuthName \"Zalguj się\" >> /home/$login/public_html/private_html/.htaccess
+echo AuthUserFile /home/$login/.htpasswd >> /home/$login/public_html/private_html/.htaccess
+echo Require valid-user >> /home/$login/public_html/private_html/.htaccess
+echo Witaj! > /etc/motd
+echo Witaj! > /home/$login/welcome.msg
