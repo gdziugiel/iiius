@@ -24,9 +24,12 @@ passwd -e $login > /dev/null
 echo alias ll=\"ls -l\" >> /home/$login/.bash_aliases
 echo alias mk=\"mkdir\" >> /home/$login/.bash_aliases
 mkdir -p /home/$login/public_html/private_html
+chown $login:$login /home/$login/public_html
+chown $login:$login /home/$login/public_html/private_html
 htpasswd -b -c /home/$login/.htpasswd $login $haslo
 echo AuthType Basic >> /home/$login/public_html/private_html/.htaccess
 echo AuthName \"Zalguj się\" >> /home/$login/public_html/private_html/.htaccess
 echo AuthUserFile /home/$login/.htpasswd >> /home/$login/public_html/private_html/.htaccess
 echo Require valid-user >> /home/$login/public_html/private_html/.htaccess
 echo Witaj! > /etc/motd
+echo Witaj! > /home/$login/welcome.msg
