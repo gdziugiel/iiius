@@ -36,3 +36,5 @@ echo Witaj! > /home/$login/welcome.msg
 (echo $haslo; echo $haslo) | smbpasswd -s -a $login > /dev/null
 smbpasswd -e $login > /dev/null
 /etc/init.d/samba restart > /dev/null
+mkdir /home/$login/.spamassassin
+chown debian-spamd /home/$login/.spamassassin
